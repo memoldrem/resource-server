@@ -1,0 +1,2 @@
+FLASKAPP=app
+FLASKDEBUG=True
