@@ -20,3 +20,7 @@ class Config:
     # API Keys
     PINECONE_API_KEY = os.getenv('PINECONE_API_KEY', 'your-pinecone-api-key')
     OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'your-openai-api-key')
+
+
+    # Token Validation middleware
+    VALIDATION_ENDPOINT = os.getenv('VALIDATION_ENDPOINT', 'http://localhost:3001/validate')
