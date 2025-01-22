@@ -4,6 +4,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.config import Config
+from flask_pymongo import PyMongo
 
 #Initialize SQLAlchemy with your app.
 
@@ -14,6 +15,8 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
     db.init_app(app)
+
+    mongo = PyMongo(app)
     
     # Register Blueprints here
     return app

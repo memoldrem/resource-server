@@ -27,7 +27,7 @@ def token_required(f):
             if response.status_code == 200:  # Token is valid, pass the request to the next handler
                 return f(*args, **kwargs)
             else:
-                abort(401, 'Invalid or expired token')
+                abort(401, 'Invalid or expired token') # maybe we could just log out instead tho
         except requests.exceptions.RequestException as e:
             print(f"Error contacting the validation server: {e}")
             abort(500, 'Internal server error while validating token')
