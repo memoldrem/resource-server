@@ -1,14 +1,13 @@
 from flask_pymongo import PyMongo
 from flask import current_app
+from bson import ObjectId
 from datetime import datetime
 import pytz
 
 class PostRepository:
-    @staticmethod
+    @staticmethod # Create
     def create_post(content, thread_id, author_id):
-        # Access MongoDB collection 'posts'
         posts_collection = current_app.mongo.db.posts
-        
         new_post = {
             "thread_id": thread_id,
             "author_id": author_id,
@@ -17,13 +16,11 @@ class PostRepository:
             "updated_at": datetime.now(pytz.UTC),
         }
         
-        # Insert the new post into the 'posts' collection
+
         post_id = posts_collection.insert_one(new_post).inserted_id
-        
-        # Return the created post with its ID
         return { "id": str(post_id), "content": content, "thread_id": thread_id }
 
-    @staticmethod
+    @staticmethod # Read
     def get_post_by_id(post_id):
         posts_collection = current_app.mongo.db.posts
         post = posts_collection.find_one({"_id": post_id})
@@ -58,3 +55,45 @@ class PostRepository:
             posts.append(post)
         
         return posts
+    
+    @staticmethod   # Update
+    def update_post(post_id: str, content: str):
+        try:
+            post_object_id = ObjectId(post_id) # Convert post_id to ObjectId
+            posts_collection = current_app.mongo.db.posts
+            result = posts_collection.update_one(
+                {"_id": post_object_id},
+                {"$set": {"content": content, "updated_at": datetime.now(pytz.UTC)}}
+            )
+            if result.modified_count == 1:
+                return {"message": "Post updated successfully", "success": True}
+            else:
+                return {"message": "Post not found", "success": False}
+        except Exception as e:
+            return {"message": f"Error updating post: {str(e)}", "success": False}
+
+
+    @staticmethod   # Delete
+    def delete_post(post_id: str):
+        try:
+            post_object_id = ObjectId(post_id) # Convert post_id to ObjectId
+            posts_collection = current_app.mongo.db.posts
+            result = posts_collection.delete_one({"_id": post_object_id})
+
+            if result.deleted_count == 1:
+                return {"message": "Post deleted successfully", "success": True}
+            else:
+                return {"message": "Post not found", "success": False}
+        except Exception as e:
+            return {"message": f"Error deleting post: {str(e)}", "success": False}
+        
+    
+    @staticmethod
+    def delete_posts_by_thread(thread_id: str):
+        try:
+            posts_collection = current_app.mongo.db.posts
+            result = posts_collection.delete_many({"thread_id": thread_id})
+
+            return {"message": f"Deleted {result.deleted_count} posts", "success": True}
+        except Exception as e:
+            return {"message": f"Error deleting posts: {str(e)}", "success": False}

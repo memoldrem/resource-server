@@ -6,6 +6,7 @@ import os
 
 load_dotenv()
 VALIDATION_ENDPOINT = os.getenv("VALIDATION_ENDPOINT")
+LOGOUT_ENDPOINT = os.getenv("LOGOUT_ENDPOINT")
 
 def token_required(f):
     @wraps(f)
@@ -27,7 +28,8 @@ def token_required(f):
             if response.status_code == 200:  # Token is valid, pass the request to the next handler
                 return f(*args, **kwargs)
             else:
-                abort(401, 'Invalid or expired token') # maybe we could just log out instead tho
+                # abort(401, 'Invalid or expired token')
+                requests.post(LOGOUT_ENDPOINT, cookies=request.cookies) 
         except requests.exceptions.RequestException as e:
             print(f"Error contacting the validation server: {e}")
             abort(500, 'Internal server error while validating token')

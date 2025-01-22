@@ -18,3 +18,5 @@ db = SQLAlchemy(app)
 mongo_db = os.getenv('MONGO_URI') 
 mongo = PyMongo(app)
 
+
+
