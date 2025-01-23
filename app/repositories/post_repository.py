@@ -16,7 +16,6 @@ class PostRepository:
             "updated_at": datetime.now(pytz.UTC),
         }
         
-
         post_id = posts_collection.insert_one(new_post).inserted_id
         return { "id": str(post_id), "content": content, "thread_id": thread_id }
 

@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from middleware.token_required import token_required # Import the token_required decorator
 
 app = Flask(__name__)
@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return jsonify({"message": "hey"})
+    return render_template('home.html')
 
 
 @app.route('/protected')

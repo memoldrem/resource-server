@@ -1,18 +1,49 @@
+import datetime
 from app.database.rdbms import Thread
 from app import db
+from app.repositories.post_repository import PostRepository 
 
 class ThreadRepository:
     @staticmethod
-    def create_thread(title, content, forum_id):
-        new_thread = Thread(title=title, content=content, forum_id=forum_id)
+    def create_thread(title: str, forum_id: int, author_id: int) -> Thread:
+        new_thread = Thread(title=title, post_count=0, forum_id=forum_id, author_id=author_id, last_post_at=datetime.utcnow())
         db.session.add(new_thread)
         db.session.commit()
         return new_thread
 
     @staticmethod
-    def get_thread_by_id(thread_id):
-        return Thread.query.get(thread_id)
+    def get_thread_by_id(thread_id: int) -> Thread:
+        thread = Thread.query.get(thread_id)
+        if thread is None:
+            raise ValueError(f"Thread with ID {thread_id} not found")
+        return thread
 
     @staticmethod
-    def get_threads_by_forum(forum_id):
+    def get_threads_by_forum(forum_id: int) -> list[Thread]:
         return Thread.query.filter_by(forum_id=forum_id).all()
+
+    @staticmethod
+    def get_threads_by_author(author_id: int) -> list[Thread]:
+        return Thread.query.filter_by(author_id=author_id).all()
+
+
+    @staticmethod
+    def add_post_to_thread(post_repo: PostRepository, thread_id: int, author_id: int, content: str) -> dict:
+        thread = Thread.query.get(thread_id)
+        if thread is None:
+            raise ValueError(f"Thread with ID {thread_id} not found")
+        # Delegate post creation to PostRepository
+        post = post_repo.create_post(thread_id=thread_id, author_id=author_id, content=content)
+        thread.post_count += 1
+        thread.last_post_at = datetime.utcnow()
+        db.session.commit()
+        return post
+
+    @staticmethod
+    def delete_thread(thread_id: int) -> str:
+        thread = Thread.query.get(thread_id)
+        if thread is None:
+            raise ValueError(f"Thread with ID {thread_id} not found")
+        db.session.delete(thread)
+        db.session.commit()
+        return f"Thread with ID {thread_id} has been deleted successfully"

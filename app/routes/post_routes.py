@@ -5,19 +5,19 @@ from app.utils.auth import token_required
 post_bp = Blueprint('post', __name__)
 
 
-@post_bp.route('/post', methods=['POST']) #create
-@token_required
-def create_post(current_user):
-    data = request.get_json()
+# @post_bp.route('/post', methods=['POST']) #create
+# @token_required
+# def create_post(current_user):
+#     data = request.get_json()
 
-    # Validate input
-    if not data or 'content' not in data or 'thread_id' not in data:
-        return jsonify({"message": "Missing required fields"}), 400
+#     # Validate input
+#     if not data or 'content' not in data or 'thread_id' not in data:
+#         return jsonify({"message": "Missing required fields"}), 400
 
-    result = PostRepository.create_post(content=data['content'], thread_id=data['thread_id'])
-    if result.get("success"):
-        return jsonify({"message": "Post created", "post": result.get("post")}), 201
-    return jsonify({"message": result.get("message")}), 400
+#     result = PostRepository.create_post(content=data['content'], thread_id=data['thread_id'])
+#     if result.get("success"):
+#         return jsonify({"message": "Post created", "post": result.get("post")}), 201
+#     return jsonify({"message": result.get("message")}), 400
 
 
 @post_bp.route('/<post_id>', methods=['GET']) # Read
