@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from app.repositories.post_repository import PostRepository
 from app.utils.auth import token_required
 
-post_bp = Blueprint('post', __name__)
+posts_bp = Blueprint('post', __name__)
 
 
 # @post_bp.route('/post', methods=['POST']) #create
@@ -20,7 +20,7 @@ post_bp = Blueprint('post', __name__)
 #     return jsonify({"message": result.get("message")}), 400
 
 
-@post_bp.route('/<post_id>', methods=['GET']) # Read
+@posts_bp.route('/<post_id>', methods=['GET']) # Read
 @token_required
 def get_post(post_id):
     post = PostRepository.get_post_by_id(post_id)
@@ -30,7 +30,7 @@ def get_post(post_id):
 
 
 # Get all posts by thread ID
-@post_bp.route('/thread/<thread_id>', methods=['GET'])
+@posts_bp.route('/thread/<thread_id>', methods=['GET'])
 @token_required
 def get_posts_by_thread(thread_id):
     posts = PostRepository.get_posts_by_thread(thread_id)
@@ -38,14 +38,14 @@ def get_posts_by_thread(thread_id):
 
 
 # Get all posts by author ID
-@post_bp.route('/author/<author_id>', methods=['GET'])
+@posts_bp.route('/author/<author_id>', methods=['GET'])
 @token_required
 def get_posts_by_author(author_id):
     posts = PostRepository.get_posts_by_author(author_id)
     return jsonify(posts), 200
 
 
-@post_bp.route('/<post_id>', methods=['PUT']) # update
+@posts_bp.route('/<post_id>', methods=['PUT']) # update
 @token_required
 def update_post(post_id):
     data = request.get_json()
@@ -59,7 +59,7 @@ def update_post(post_id):
     return jsonify({"message": result.get("message")}), 400
 
 
-@post_bp.route('/<post_id>', methods=['DELETE']) # delete
+@posts_bp.route('/<post_id>', methods=['DELETE']) # delete
 @token_required
 def delete_post(post_id):
     result = PostRepository.delete_post(post_id)
