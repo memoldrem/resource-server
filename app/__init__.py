@@ -1,21 +1,31 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_pymongo import PyMongo
-from app.config import Config
 from flask_migrate import Migrate
+from app.config import Config
+from dotenv import load_dotenv
+import os
 
-
+load_dotenv()  # Load environment variables from .env file
 
 db = SQLAlchemy()
 mongo = PyMongo()
 
 def create_app():
-    
     app = Flask(__name__)
     app.config.from_object(Config)
     
+    # Database connection string for PostgreSQL
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+    
+    # MongoDB connection string
+    app.config['MONGO_URI'] = os.getenv("MONGO_URI")
+    
+    # Initialize databases
     db.init_app(app)
     mongo.init_app(app)
+    
+    # Initialize Flask-Migrate
     migrate = Migrate(app, db)
     
     # Register Blueprints
@@ -27,4 +37,5 @@ def create_app():
     app.register_blueprint(posts_bp, url_prefix='/')
     
     return app
+
 

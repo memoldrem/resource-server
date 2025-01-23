@@ -5,6 +5,19 @@ from datetime import datetime
 import pytz
 
 class PostRepository:
+    # def __init__(self, app=None, db_url="mongodb://localhost:27017", db_name="forum_db"):
+    #     """Initialize the PostRepository with MongoDB connection."""
+    #     self.mongo = PyMongo()
+    #     if app:
+    #         self.init_app(app, db_url, db_name)
+    
+    # def init_app(self, app, db_url, db_name):
+    #     """Initialize the Flask app with the MongoDB connection."""
+    #     app.config['MONGO_URI'] = db_url
+    #     self.mongo.init_app(app)
+    #     self.db = self.mongo.db[db_name]
+
+
     @staticmethod # Create
     def create_post(content, thread_id, author_id):
         posts_collection = current_app.mongo.db.posts

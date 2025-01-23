@@ -3,7 +3,7 @@ from app.repositories.thread_repository import ThreadRepository
 from app.repositories.post_repository import PostRepository
 
 threads_bp = Blueprint('thread', __name__)
-post_repo = PostRepository(db_url="mongodb://localhost:27017", db_name="forum_db")
+post_repo = PostRepository()
 
 
 @threads_bp.route('/threads', methods=['POST']) # create
