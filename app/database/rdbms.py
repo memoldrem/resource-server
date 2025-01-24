@@ -11,7 +11,6 @@ class Forum(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now(pytz.UTC))
     updated_at = db.Column(db.DateTime, default=datetime.now(pytz.UTC), onupdate=datetime.now(pytz.UTC))
 
-    author_id = db.Column(db.Integer, db.ForeignKey('user_role.id'), nullable=False)
     threads = db.relationship('Thread', backref='forum', lazy=True)
 
 
@@ -38,5 +37,4 @@ class UserRole(db.Model):
     user_id = db.Column(db.String(255), nullable=False)  # OAuth User ID
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
     
-    forums = db.relationship('Forum', backref='author', lazy=True)
     threads = db.relationship('Thread', backref='author', lazy=True)
