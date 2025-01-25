@@ -2,8 +2,11 @@ from flask import Blueprint, request, jsonify
 from app.repositories.thread_repository import ThreadRepository
 from app.repositories.post_repository import PostRepository
 
-threads_bp = Blueprint('thread', __name__)
+
+threads_bp = Blueprint('threads', __name__)
 post_repo = PostRepository()
+
+
 
 
 @threads_bp.route('/threads', methods=['POST']) # create
@@ -11,9 +14,9 @@ def create_thread():
     data = request.get_json()
     try:
         title = data['title']
-        content = data['content']
         forum_id = data['forum_id']
-        new_thread = ThreadRepository.create_thread(title, content, forum_id)
+        author_id = data['author_id']
+        new_thread = ThreadRepository.create_thread(title, forum_id, author_id)
         return jsonify({
             'id': new_thread.id,
             'title': new_thread.title,
@@ -51,8 +54,11 @@ def get_thread(thread_id):
 @threads_bp.route('/threads/forum/<int:forum_id>', methods=['GET'])
 def get_threads_by_forum(forum_id):
     threads = ThreadRepository.get_threads_by_forum(forum_id)
+    if not threads:
+            return jsonify({"message": "No threads found for this forum"}), 404
+    
     return jsonify([{
-        'id': threads.id,
+        'id': thread.id,
         'title': thread.title,
         'post_count': thread.post_count,
         'last_post_at': thread.last_post_at,
@@ -74,6 +80,7 @@ def add_post_to_thread(thread_id):
     except ValueError as e:
         return jsonify({'error': str(e)}), 404
     except Exception as e:
+        print('thread_routes.py')
         return jsonify({'error': str(e)}), 500
 
 @threads_bp.route('/threads/<int:thread_id>', methods=['DELETE'])

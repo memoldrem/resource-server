@@ -27,14 +27,17 @@ class Thread(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user_role.id'), nullable=False)
 
 
-class Role(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), unique=True, nullable=False)  # E.g., admin, moderator, user
-
-
 class UserRole(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(255), nullable=False)  # OAuth User ID
+    user_id = db.Column(db.Integer, nullable=False)
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
     
+    role = db.relationship('Role', back_populates='user_roles')
     threads = db.relationship('Thread', backref='author', lazy=True)
+
+
+class Role(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), unique=True, nullable=False)
+
+    user_roles = db.relationship('UserRole', back_populates='role')

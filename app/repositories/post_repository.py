@@ -2,13 +2,17 @@ from flask_pymongo import PyMongo
 from flask import current_app
 from bson import ObjectId
 from datetime import datetime
+from app import mongo
 import pytz
 
 class PostRepository:
 
     @staticmethod # Create
     def create_post(content, thread_id, author_id):
-        posts_collection = current_app.mongo.db.posts
+        print('post repo reached') 
+        posts_collection = mongo.db.posts
+        print(posts_collection)
+        print('collection established') 
         new_post = {
             "thread_id": thread_id,
             "author_id": author_id,
@@ -18,11 +22,12 @@ class PostRepository:
         }
         
         post_id = posts_collection.insert_one(new_post).inserted_id
+        print('post added') 
         return { "id": str(post_id), "content": content, "thread_id": thread_id }
 
     @staticmethod # Read
     def get_post_by_id(post_id):
-        posts_collection = current_app.mongo.db.posts
+        posts_collection = mongo.db.posts
         post = posts_collection.find_one({"_id": post_id})
         
         if post:
@@ -32,7 +37,7 @@ class PostRepository:
 
     @staticmethod
     def get_posts_by_thread(thread_id):
-        posts_collection = current_app.mongo.db.posts
+        posts_collection = mongo.db.posts
         posts_cursor = posts_collection.find({"thread_id": thread_id})
         
         posts = []
@@ -46,7 +51,7 @@ class PostRepository:
     @staticmethod
     def get_posts_by_author(author_id):
         
-        posts_collection = current_app.mongo.db.posts 
+        posts_collection = mongo.db.posts
         posts_cursor = posts_collection.find({"author_id": author_id})
         
         posts = [] 
@@ -60,7 +65,7 @@ class PostRepository:
     def update_post(post_id: str, content: str):
         try:
             post_object_id = ObjectId(post_id) # Convert post_id to ObjectId
-            posts_collection = current_app.mongo.db.posts
+            posts_collection = mongo.db.posts
             result = posts_collection.update_one(
                 {"_id": post_object_id},
                 {"$set": {"content": content, "updated_at": datetime.now(pytz.UTC)}}
@@ -77,7 +82,7 @@ class PostRepository:
     def delete_post(post_id: str):
         try:
             post_object_id = ObjectId(post_id) # Convert post_id to ObjectId
-            posts_collection = current_app.mongo.db.posts
+            posts_collection = mongo.db.posts
             result = posts_collection.delete_one({"_id": post_object_id})
 
             if result.deleted_count == 1:
@@ -91,7 +96,7 @@ class PostRepository:
     @staticmethod
     def delete_posts_by_thread(thread_id: str):
         try:
-            posts_collection = current_app.mongo.db.posts
+            posts_collection = mongo.db.posts
             result = posts_collection.delete_many({"thread_id": thread_id})
 
             return {"message": f"Deleted {result.deleted_count} posts", "success": True}

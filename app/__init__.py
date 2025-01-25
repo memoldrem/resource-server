@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_pymongo import PyMongo
 from flask_migrate import Migrate
@@ -35,6 +35,7 @@ def create_app():
     app.register_blueprint(forums_bp, url_prefix='/')
     app.register_blueprint(threads_bp, url_prefix='/')
     app.register_blueprint(posts_bp, url_prefix='/')
+
     
     return app
 

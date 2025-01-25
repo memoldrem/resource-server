@@ -1,9 +1,11 @@
 from flask import Blueprint, request, jsonify
-from app import db
 from app.repositories.forum_repository import ForumRepository
 
-forums_bp = Blueprint('forum', __name__)
+forums_bp = Blueprint('forums', __name__)
 
+@forums_bp.route('/test', methods=['POST'])
+def create_dat():
+        return jsonify({"message": "Thread creation route is working!"}), 200
 
 @forums_bp.route('/forums', methods=['POST'])
 #ADMIN ONLY MIDDLEWARE
