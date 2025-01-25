@@ -9,10 +9,8 @@ class PostRepository:
 
     @staticmethod # Create
     def create_post(content, thread_id, author_id):
-        print('post repo reached') 
         posts_collection = mongo.db.posts
-        print(posts_collection)
-        print('collection established') 
+
         new_post = {
             "thread_id": thread_id,
             "author_id": author_id,
@@ -28,7 +26,11 @@ class PostRepository:
     @staticmethod # Read
     def get_post_by_id(post_id):
         posts_collection = mongo.db.posts
-        post = posts_collection.find_one({"_id": post_id})
+        try:
+            post = posts_collection.find_one({"_id": ObjectId(post_id)})
+        except Exception as e:
+            print(f"Error converting post_id to ObjectId: {e}")
+            return None
         
         if post:
             post['_id'] = str(post['_id'])  # Convert ObjectId to string for JSON serialization
@@ -38,13 +40,14 @@ class PostRepository:
     @staticmethod
     def get_posts_by_thread(thread_id):
         posts_collection = mongo.db.posts
-        posts_cursor = posts_collection.find({"thread_id": thread_id})
-        
+        print(f"Searching for posts with thread_id: {thread_id}")
+        posts_cursor = posts_collection.find({"thread_id": int(thread_id)})
+    
         posts = []
         for post in posts_cursor:
-            post['_id'] = str(post['_id'])  
+            post['_id'] = str(post['_id'])  # Convert ObjectId to string
             posts.append(post)
-        
+    
         return posts
     
 
@@ -52,7 +55,7 @@ class PostRepository:
     def get_posts_by_author(author_id):
         
         posts_collection = mongo.db.posts
-        posts_cursor = posts_collection.find({"author_id": author_id})
+        posts_cursor = posts_collection.find({"author_id": int(author_id)})
         
         posts = [] 
         for post in posts_cursor:
@@ -62,20 +65,18 @@ class PostRepository:
         return posts
     
     @staticmethod   # Update
-    def update_post(post_id: str, content: str):
-        try:
-            post_object_id = ObjectId(post_id) # Convert post_id to ObjectId
-            posts_collection = mongo.db.posts
-            result = posts_collection.update_one(
-                {"_id": post_object_id},
-                {"$set": {"content": content, "updated_at": datetime.now(pytz.UTC)}}
-            )
-            if result.modified_count == 1:
-                return {"message": "Post updated successfully", "success": True}
-            else:
-                return {"message": "Post not found", "success": False}
-        except Exception as e:
-            return {"message": f"Error updating post: {str(e)}", "success": False}
+
+    def update_post(post_id, updated_fields):
+        posts_collection = mongo.db.posts
+        result = posts_collection.update_one(
+            {"_id": ObjectId(post_id)}, 
+            {"$set": updated_fields}
+        )
+        
+        if result.modified_count > 0:
+            return {"success": True, "message": "Post updated", "post": updated_fields}
+        return {"success": False, "message": "Post not found or no changes made"}
+
 
 
     @staticmethod   # Delete
