@@ -32,9 +32,11 @@ def create_app():
     from app.routes.forum_routes import forums_bp
     from app.routes.thread_routes import threads_bp
     from app.routes.post_routes import posts_bp
-    app.register_blueprint(forums_bp, url_prefix='/')
-    app.register_blueprint(threads_bp, url_prefix='/')
-    app.register_blueprint(posts_bp, url_prefix='/')
+    from app.routes.ai_assistant_routes import ai_assistant_bp
+    app.register_blueprint(forums_bp, url_prefix='/forums/')
+    app.register_blueprint(threads_bp, url_prefix='/threads/')
+    app.register_blueprint(posts_bp, url_prefix='/posts/')
+    app.register_blueprint(ai_assistant_bp, url_prefix='/assistant/')
 
     
     return app

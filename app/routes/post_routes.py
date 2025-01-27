@@ -30,7 +30,6 @@ def get_post(post_id):
     return jsonify({"message": "Post not found"}), 404
 
 
-# Get all posts by thread ID
 @posts_bp.route('/thread/<thread_id>/posts', methods=['GET'])
 # @token_required
 def get_posts_by_thread(thread_id):
@@ -38,7 +37,6 @@ def get_posts_by_thread(thread_id):
     return jsonify(posts), 200
 
 
-# Get all posts by author ID
 @posts_bp.route('/author/<author_id>/posts', methods=['GET'])
 # @token_required
 def get_posts_by_author(author_id):
