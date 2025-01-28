@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
@@ -10,7 +12,6 @@ load_dotenv()
 
 moderation_bp = Blueprint("moderation", __name__)
 config_collection = mongo.db.ai_assistants
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @moderation_bp.route('/', methods=['POST'])
 def moderate_content():
@@ -29,17 +30,15 @@ def moderate_content():
 
     try:
         # Make API request to OpenAI's completion endpoint
-        response = openai.ChatCompletion.create(
-    model=model_name,
-    messages=[
-        {"role": "system", "content": "You are a content moderation assistant."},
-        {"role": "user", "content": content}
-    ],
-    max_tokens=max_tokens,
-    temperature=temperature
-)
+        response = client.chat.completions.create(model=model_name,
+        messages=[
+            {"role": "system", "content": "You are a content moderation assistant."},
+            {"role": "user", "content": content}
+        ],
+        max_tokens=max_tokens,
+        temperature=temperature)
 
-        moderation_response = response["choices"][0]["text"]
+        moderation_response = response.choices[0].text
         return jsonify({"content": content, "moderation_response": moderation_response}), 200
 
     except Exception as e:

@@ -146,6 +146,12 @@ class AzureOpenAIWhisperParser(BaseBlobParser):
 
         try:
             import openai
+            from openai import AzureOpenAI
+            
+            client = AzureOpenAI(api_key=self.api_key,
+            api_version=self.api_version,
+            api_key=self.api_key,
+            azure_endpoint=self.base_url)
         except ImportError:
             raise ImportError(
                 "openai package not found, please install it with "
@@ -162,12 +168,10 @@ class AzureOpenAIWhisperParser(BaseBlobParser):
             )
         else:
             if self.api_key:
-                openai.api_key = self.api_key
             if self.azure_endpoint:
-                openai.api_base = self.azure_endpoint
+                # TODO: The 'openai.api_base' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(base_url=self.azure_endpoint)'
+                # openai.api_base = self.azure_endpoint
             if self.api_version:
-                openai.api_version = self.api_version
-            openai.api_type = "azure"
             self._client = openai
 
     @property
@@ -276,6 +280,12 @@ class OpenAIWhisperParser(BaseBlobParser):
 
         try:
             import openai
+            from openai import AzureOpenAI
+            
+            client = AzureOpenAI(api_key=self.api_key,
+            api_version=self.api_version,
+            api_key=self.api_key,
+            azure_endpoint=self.base_url)
         except ImportError:
             raise ImportError(
                 "openai package not found, please install it with "
@@ -294,9 +304,7 @@ class OpenAIWhisperParser(BaseBlobParser):
         else:
             # Set the API key if provided
             if self.api_key:
-                openai.api_key = self.api_key
             if self.base_url:
-                openai.api_base = self.base_url
 
         # Audio file from disk
 
@@ -329,7 +337,7 @@ class OpenAIWhisperParser(BaseBlobParser):
                             model="whisper-1", file=file_obj, **self._create_params
                         )
                     else:
-                        transcript = openai.Audio.transcribe("whisper-1", file_obj)  # type: ignore[attr-defined]
+                        transcript = client.audio.transcribe("whisper-1", file_obj)  # type: ignore[attr-defined]
                     break
                 except Exception as e:
                     attempts += 1

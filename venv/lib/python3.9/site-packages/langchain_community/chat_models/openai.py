@@ -88,11 +88,11 @@ def _create_retry_decorator(
     import openai
 
     errors = [
-        openai.error.Timeout,  # type: ignore[attr-defined]
-        openai.error.APIError,  # type: ignore[attr-defined]
-        openai.error.APIConnectionError,  # type: ignore[attr-defined]
-        openai.error.RateLimitError,  # type: ignore[attr-defined]
-        openai.error.ServiceUnavailableError,  # type: ignore[attr-defined]
+        openai.Timeout,  # type: ignore[attr-defined]
+        openai.APIError,  # type: ignore[attr-defined]
+        openai.APIConnectionError,  # type: ignore[attr-defined]
+        openai.RateLimitError,  # type: ignore[attr-defined]
+        openai.ServiceUnavailableError,  # type: ignore[attr-defined]
     ]
     return create_base_retry_decorator(
         error_types=errors, max_retries=llm.max_retries, run_manager=run_manager
@@ -595,7 +595,8 @@ class ChatOpenAI(BaseChatModel):
         if self.openai_proxy:
             import openai
 
-            openai.proxy = {"http": self.openai_proxy, "https": self.openai_proxy}  # type: ignore[attr-defined]
+            # TODO: The 'openai.proxy' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(proxy={"http": self.openai_proxy, "https": self.openai_proxy})'
+            # openai.proxy = {"http": self.openai_proxy, "https": self.openai_proxy}  # type: ignore[attr-defined]
         return {**self._default_params, **openai_creds}
 
     def _get_invocation_params(

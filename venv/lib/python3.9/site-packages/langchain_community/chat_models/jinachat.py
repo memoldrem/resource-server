@@ -70,11 +70,11 @@ def _create_retry_decorator(llm: JinaChat) -> Callable[[Any], Any]:
         stop=stop_after_attempt(llm.max_retries),
         wait=wait_exponential(multiplier=1, min=min_seconds, max=max_seconds),
         retry=(
-            retry_if_exception_type(openai.error.Timeout)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.APIError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.APIConnectionError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.RateLimitError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.ServiceUnavailableError)  # type: ignore[attr-defined]
+            retry_if_exception_type(openai.Timeout)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.APIError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.APIConnectionError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.RateLimitError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.ServiceUnavailableError)  # type: ignore[attr-defined]
         ),
         before_sleep=before_sleep_log(logger, logging.WARNING),
     )
@@ -266,11 +266,11 @@ class JinaChat(BaseChatModel):
             stop=stop_after_attempt(self.max_retries),
             wait=wait_exponential(multiplier=1, min=min_seconds, max=max_seconds),
             retry=(
-                retry_if_exception_type(openai.error.Timeout)  # type: ignore[attr-defined]
-                | retry_if_exception_type(openai.error.APIError)  # type: ignore[attr-defined]
-                | retry_if_exception_type(openai.error.APIConnectionError)  # type: ignore[attr-defined]
-                | retry_if_exception_type(openai.error.RateLimitError)  # type: ignore[attr-defined]
-                | retry_if_exception_type(openai.error.ServiceUnavailableError)  # type: ignore[attr-defined]
+                retry_if_exception_type(openai.Timeout)  # type: ignore[attr-defined]
+                | retry_if_exception_type(openai.APIError)  # type: ignore[attr-defined]
+                | retry_if_exception_type(openai.APIConnectionError)  # type: ignore[attr-defined]
+                | retry_if_exception_type(openai.RateLimitError)  # type: ignore[attr-defined]
+                | retry_if_exception_type(openai.ServiceUnavailableError)  # type: ignore[attr-defined]
             ),
             before_sleep=before_sleep_log(logger, logging.WARNING),
         )

@@ -96,8 +96,8 @@ class GooseAI(LLM):
         try:
             import openai
 
-            openai.api_key = gooseai_api_key.get_secret_value()
-            openai.api_base = "https://api.goose.ai/v1"  # type: ignore[attr-defined]
+            # TODO: The 'openai.api_base' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(base_url="https://api.goose.ai/v1")'
+            # openai.api_base = "https://api.goose.ai/v1"  # type: ignore[attr-defined]
             values["client"] = openai.Completion  # type: ignore[attr-defined]
         except ImportError:
             raise ImportError(

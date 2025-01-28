@@ -58,11 +58,11 @@ def _create_retry_decorator(embeddings: OpenAIEmbeddings) -> Callable[[Any], Any
             max=embeddings.retry_max_seconds,
         ),
         retry=(
-            retry_if_exception_type(openai.error.Timeout)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.APIError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.APIConnectionError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.RateLimitError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.ServiceUnavailableError)  # type: ignore[attr-defined]
+            retry_if_exception_type(openai.Timeout)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.APIError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.APIConnectionError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.RateLimitError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.ServiceUnavailableError)  # type: ignore[attr-defined]
         ),
         before_sleep=before_sleep_log(logger, logging.WARNING),
     )
@@ -85,11 +85,11 @@ def _async_retry_decorator(embeddings: OpenAIEmbeddings) -> Any:
             max=embeddings.retry_max_seconds,
         ),
         retry=(
-            retry_if_exception_type(openai.error.Timeout)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.APIError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.APIConnectionError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.RateLimitError)  # type: ignore[attr-defined]
-            | retry_if_exception_type(openai.error.ServiceUnavailableError)  # type: ignore[attr-defined]
+            retry_if_exception_type(openai.Timeout)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.APIError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.APIConnectionError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.RateLimitError)  # type: ignore[attr-defined]
+            | retry_if_exception_type(openai.ServiceUnavailableError)  # type: ignore[attr-defined]
         ),
         before_sleep=before_sleep_log(logger, logging.WARNING),
     )
@@ -110,7 +110,7 @@ def _check_response(response: dict, skip_empty: bool = False) -> dict:
     if any(len(d["embedding"]) == 1 for d in response["data"]) and not skip_empty:
         import openai
 
-        raise openai.error.APIError("OpenAI API returned an empty embedding")  # type: ignore[attr-defined]
+        raise openai.APIError("OpenAI API returned an empty embedding")  # type: ignore[attr-defined]
     return response
 
 
@@ -390,10 +390,14 @@ class OpenAIEmbeddings(BaseModel, Embeddings):
                         "Please install it with `pip install openai`."
                     )
 
-                openai.proxy = {  # type: ignore[attr-defined]
-                    "http": self.openai_proxy,
-                    "https": self.openai_proxy,
-                }  # type: ignore[assignment]
+                # TODO: The 'openai.proxy' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(proxy={  # type: ignore[attr-defined]
+                #                     "http": self.openai_proxy,
+                #                     "https": self.openai_proxy,
+                #                 })'
+                # openai.proxy = {  # type: ignore[attr-defined]
+                #                     "http": self.openai_proxy,
+                #                     "https": self.openai_proxy,
+                #                 }  # type: ignore[assignment]
         return openai_args
 
     # please refer to

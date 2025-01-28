@@ -100,11 +100,11 @@ def _create_retry_decorator(
     import openai
 
     errors = [
-        openai.error.Timeout,  # type: ignore[attr-defined]
-        openai.error.APIError,  # type: ignore[attr-defined]
-        openai.error.APIConnectionError,  # type: ignore[attr-defined]
-        openai.error.RateLimitError,  # type: ignore[attr-defined]
-        openai.error.ServiceUnavailableError,  # type: ignore[attr-defined]
+        openai.Timeout,  # type: ignore[attr-defined]
+        openai.APIError,  # type: ignore[attr-defined]
+        openai.APIConnectionError,  # type: ignore[attr-defined]
+        openai.RateLimitError,  # type: ignore[attr-defined]
+        openai.ServiceUnavailableError,  # type: ignore[attr-defined]
     ]
     return create_base_retry_decorator(
         error_types=errors, max_retries=llm.max_retries, run_manager=run_manager
@@ -607,7 +607,8 @@ class BaseOpenAI(BaseLLM):
         if self.openai_proxy:
             import openai
 
-            openai.proxy = {"http": self.openai_proxy, "https": self.openai_proxy}  # type: ignore[assignment]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]
+            # TODO: The 'openai.proxy' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(proxy={"http": self.openai_proxy, "https": self.openai_proxy})'
+            # openai.proxy = {"http": self.openai_proxy, "https": self.openai_proxy}  # type: ignore[assignment]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]
         return {**openai_creds, **self._default_params}
 
     @property
@@ -1063,13 +1064,15 @@ class OpenAIChat(BaseLLM):
         try:
             import openai
 
-            openai.api_key = openai_api_key
             if openai_api_base:
-                openai.api_base = openai_api_base  # type: ignore[attr-defined]
+                # TODO: The 'openai.api_base' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(base_url=openai_api_base)'
+                # openai.api_base = openai_api_base  # type: ignore[attr-defined]
             if openai_organization:
-                openai.organization = openai_organization
+                # TODO: The 'openai.organization' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(organization=openai_organization)'
+                # openai.organization = openai_organization
             if openai_proxy:
-                openai.proxy = {"http": openai_proxy, "https": openai_proxy}  # type: ignore[assignment]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]
+                # TODO: The 'openai.proxy' option isn't read in the client API. You will need to pass it when you instantiate the client, e.g. 'OpenAI(proxy={"http": openai_proxy, "https": openai_proxy})'
+                # openai.proxy = {"http": openai_proxy, "https": openai_proxy}  # type: ignore[assignment]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]  # type: ignore[attr-defined]
         except ImportError:
             raise ImportError(
                 "Could not import openai python package. "
