@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, json
 from openai import OpenAI
 import os
 from dotenv import load_dotenv
@@ -47,10 +47,13 @@ def moderate_content():
       
         moderation_response = response.choices[0].message.content.strip()
         moderation_response = moderation_response.replace("\n", " ")
-        print("Moderation response:", moderation_response)
+        # print("Moderation response:", moderation_response)
+        moderation_response_dict = json.loads(moderation_response)
 
         # Return content with the moderation response
-        return jsonify({"content": content, "moderation_response": moderation_response}), 200
+        if moderation_response_dict.get("overall") == "flagged":
+            return jsonify({"content": content, "flagged": True, "moderation_response": moderation_response}), 200
+        return jsonify({"content": content, "flagged": False, "moderation_response": moderation_response}), 200
 
     except Exception as e:
         return jsonify({"error": "Error processing content", "details": str(e)}), 500
