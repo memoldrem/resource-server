@@ -36,7 +36,7 @@ def create_app():
     app.register_blueprint(threads_bp, url_prefix='/threads/')
     app.register_blueprint(posts_bp, url_prefix='/posts/')
     app.register_blueprint(ai_assistant_bp, url_prefix='/assistant/')
-    app.register_bluprint(moderation_bp, url_prefix='/moderation/')
+    app.register_blueprint(moderation_bp, url_prefix='/moderation/')
 
     
     return app

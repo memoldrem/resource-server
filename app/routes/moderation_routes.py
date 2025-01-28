@@ -1,20 +1,21 @@
 from flask import Blueprint, request, jsonify
-from pymongo import MongoClient
+import openai
 from langchain.chains import LLMChain
 from langchain.llms import OpenAI
 from langchain.prompts import PromptTemplate
 import os
 from dotenv import load_dotenv
-from app.database.mongo_db import db 
+from app import mongo
 load_dotenv()
 
 moderation_bp = Blueprint("moderation", __name__)
-config_collection = db["ai_assistants"]
-openai_api_key = os.getenv("OPENAI_API_KEY")
+config_collection = mongo.db.ai_assistants
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @moderation_bp.route('/', methods=['POST'])
 def moderate_content():
     content = request.json.get("content")
+
     if not content:
         return jsonify({"error": "Content is required"}), 400
 
@@ -26,29 +27,20 @@ def moderate_content():
     max_tokens = config["settings"].get("max_tokens", 1500)
     temperature = config["settings"].get("temperature", 0.6)
 
-    llm = OpenAI(
-        model_name=model_name,
-        max_tokens=max_tokens,
-        temperature=temperature
-    )
-
-    # Define moderation prompt
-    prompt = PromptTemplate(
-        input_variables=["content"],
-        template=(
-            "You are a content moderation assistant. Analyze the following content for profanity, spam, "
-            "and inappropriate language. Respond with a JSON object listing detected issues and their severity.\n\n"
-            "Content: {content}\n\n"
-            "Response:"
-        )
-    )
-
-
-    chain = LLMChain(llm=llm, prompt=prompt)
-
     try:
-        moderation_response = chain.run(content)
+        # Make API request to OpenAI's completion endpoint
+        response = openai.ChatCompletion.create(
+    model=model_name,
+    messages=[
+        {"role": "system", "content": "You are a content moderation assistant."},
+        {"role": "user", "content": content}
+    ],
+    max_tokens=max_tokens,
+    temperature=temperature
+)
+
+        moderation_response = response["choices"][0]["text"]
+        return jsonify({"content": content, "moderation_response": moderation_response}), 200
+
     except Exception as e:
         return jsonify({"error": "Error processing content", "details": str(e)}), 500
-
-    return jsonify({"content": content, "moderation_response": moderation_response}), 200
