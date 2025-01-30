@@ -5,7 +5,12 @@ from app.database.rdbms import Thread
 from app import db
 from datetime import datetime
 from app import mongo
+from app.database.pinecone import index 
+from openai import OpenAI
 import pytz
+import os
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class PostRepository:
 
@@ -22,11 +27,26 @@ class PostRepository:
         }
         
         post_id = posts_collection.insert_one(new_post).inserted_id
-        print('post added') 
         thread = Thread.query.get(thread_id)
         thread.post_count += 1
         db.session.commit()
-        return { "id": str(post_id), "content": content, "thread_id": thread_id }
+        
+        try:
+            response = client.embeddings.create(input=[content], model="text-embedding-ada-002")
+            embedding = response.data[0].embedding  
+         
+            upsert_response = index.upsert(vectors=[{
+                'id': str(post_id), 
+                'values': embedding,
+                'metadata': {"content": content, "thread_id": thread_id}
+            }])
+            print("Upsert Response:", upsert_response) 
+            return {"id": str(post_id), "content": content, "thread_id": thread_id}
+
+        except Exception as e:
+            print(f"Error generating embedding or upserting to Pinecone: {e}")
+        
+        
 
     @staticmethod # Read
     def get_post_by_id(post_id):

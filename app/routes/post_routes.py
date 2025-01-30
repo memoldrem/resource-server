@@ -9,30 +9,20 @@ posts_bp = Blueprint('post', __name__)
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 
-@posts_bp.route('/post', methods=['POST']) #create
+@posts_bp.route('/post', methods=['POST'])  # create
 # @token_required
 def create_post():
-
     data = request.get_json()
 
     # Validate input
     if not data or 'content' not in data or 'thread_id' not in data:
         return jsonify({"message": "Missing required fields"}), 400
 
+    # Create post in the database
     result = PostRepository.create_post(content=data['content'], thread_id=data['thread_id'], author_id=data['author_id'])
     if not result:
         return jsonify({"message": "Failed to create post"}), 400
-    post_id = str(result['id'])  # post_id must be a string for Pinecone
-    text_content = data['content']
-    try:
-        response = client.embeddings.create(input=[text_content], model="text-embedding-3-large")
-        embedding = response.data[0].embedding # generate post embeddings
-
-        index.upsert(vectors=[(post_id, embedding, {"content": text_content, "thread_id": data['thread_id']})]) # store post
-        return jsonify({"message": "Post created and stored in Pinecone", "post": result}), 201
-
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    
 
 
 @posts_bp.route('/post/<post_id>', methods=['GET']) # Read

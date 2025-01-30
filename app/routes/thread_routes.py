@@ -7,8 +7,6 @@ threads_bp = Blueprint('threads', __name__)
 post_repo = PostRepository()
 
 
-
-
 @threads_bp.route('/threads', methods=['POST']) # create
 def create_thread():
     data = request.get_json()

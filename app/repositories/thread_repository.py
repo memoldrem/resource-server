@@ -28,19 +28,6 @@ class ThreadRepository:
     def get_threads_by_author(author_id: int) -> list[Thread]:
         return Thread.query.filter_by(author_id=author_id).all()
 
-
-    @staticmethod
-    def add_post_to_thread(post_repo: PostRepository, thread_id: int, author_id: int, content: str) -> dict:
-        print('add_post_to_thread reached') 
-        thread = Thread.query.get(thread_id)
-        if thread is None:
-            raise ValueError(f"Thread with ID {thread_id} not found")
-        post = post_repo.create_post(thread_id=thread_id, author_id=author_id, content=content)
-        thread.post_count += 1
-        thread.last_post_at = datetime.utcnow()
-        db.session.commit()
-        return post
-
     @staticmethod
     def delete_thread(post_repo: PostRepository, thread_id: int) -> str:
         thread = Thread.query.get(thread_id)
