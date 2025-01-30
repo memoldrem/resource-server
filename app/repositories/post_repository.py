@@ -1,6 +1,8 @@
 from flask_pymongo import PyMongo
 from flask import current_app
 from bson import ObjectId
+from app.database.rdbms import Thread
+from app import db
 from datetime import datetime
 from app import mongo
 import pytz
@@ -21,6 +23,9 @@ class PostRepository:
         
         post_id = posts_collection.insert_one(new_post).inserted_id
         print('post added') 
+        thread = Thread.query.get(thread_id)
+        thread.post_count += 1
+        db.session.commit()
         return { "id": str(post_id), "content": content, "thread_id": thread_id }
 
     @staticmethod # Read

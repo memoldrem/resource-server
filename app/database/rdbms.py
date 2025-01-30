@@ -5,7 +5,7 @@ import pytz
 
 
 class Forum(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.now(pytz.UTC))
@@ -15,7 +15,7 @@ class Forum(db.Model):
 
 
 class Thread(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     title = db.Column(db.String(255), nullable=False)
     post_count = db.Column(db.Integer, default=0)  # Tracks number of posts
     last_post_at = db.Column(db.DateTime)  # Tracks time of the last post

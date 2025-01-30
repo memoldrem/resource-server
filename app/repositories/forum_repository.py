@@ -1,6 +1,7 @@
 from app.database.rdbms import Forum
 from app import db
 
+
 class ForumRepository:
     @staticmethod
     def create_forum(name, description):
