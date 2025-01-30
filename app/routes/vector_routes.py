@@ -17,26 +17,13 @@ def search_posts():
         response = client.embeddings.create(input=[query], model="text-embedding-ada-002")
         query_vector = response.data[0].embedding  
 
-        # Perform vector search in Pinecone
         results = index.query(vector=query_vector, top_k=10, include_metadata=True)
 
-        # Set a similarity score threshold
         min_score = 0.5  
         filtered_results = [
             {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content")}
             for match in results['matches'] if match["score"] >= min_score
         ]
-
-        # Fallback to keyword search if no results found
-        # if not filtered_results:
-        #     fallback_results = list(db.posts.find(
-        #         {"content": {"$regex": query, "$options": "i"}}
-        #     ).limit(5))
-
-        #     filtered_results = [
-        #         {"post_id": str(post["_id"]), "content": post["content"]}
-        #         for post in fallback_results
-        #     ]
 
         if not filtered_results:
             return jsonify({'message': 'No relevant posts found'}), 200
@@ -48,33 +35,34 @@ def search_posts():
 
 
 
-# @vectors_bp.route('/recommend', methods=['GET'])
-# def recommend_posts():
-#     post_id = request.args.get('post_id')
-#     if not post_id:
-#         return jsonify({'error': 'Post ID is required'}), 400
-#     try:
-#         # Retrieve the embedding for the given post
-#         result = index.fetch(ids=[post_id])
-#         if not result or 'vectors' not in result or post_id not in result['vectors']:
-#             return jsonify({'error': 'Post not found or embedding not available'}), 404
+@vectors_bp.route('/recommend', methods=['GET'])
+def recommend_posts():
+    post_id = request.args.get('post_id')
+    if not post_id:
+        return jsonify({'error': 'Post ID is required'}), 400
+    try:
+        # Retrieve the embedding for the given post
+        result = index.fetch(ids=[post_id])
+        if not result or 'vectors' not in result or post_id not in result['vectors']:
+            return jsonify({'error': 'Post not found or embedding not available'}), 404
 
-#         post_embedding = result['vectors'][post_id]['values']
+        post_embedding = result['vectors'][post_id]['values']
 
-#         # Perform recommendation based on similarity
-#         recommendations = index.query(vector=post_embedding, top_k=5, include_metadata=True)
+        # Perform recommendation based on similarity
+        recommendations = index.query(vector=post_embedding, top_k=5, include_metadata=True)
 
-#         if not recommendations.get('matches'):
-#             return jsonify({'message': 'No similar posts found'}), 200
+        if not recommendations.get('matches'):
+            return jsonify({'message': 'No similar posts found'}), 200
 
-#         refined_recommendations = [
-#             {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content")}
-#             for match in recommendations['matches']
-#         ]
+        refined_recommendations = [
+            {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content")}
+            for match in recommendations['matches']
+            if match["id"] != post_id
+        ]
         
-#         return jsonify(refined_recommendations)
-#     except Exception as e:
-#         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+        return jsonify(refined_recommendations)
+    except Exception as e:
+        return jsonify({"error": f"An error occurred: {str(e)}"}), 500
 
 
 
