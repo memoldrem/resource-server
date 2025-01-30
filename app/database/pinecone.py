@@ -1,13 +1,18 @@
-import pinecone
 import os
+from pinecone import Pinecone, ServerlessSpec
 
-# Get Pinecone API key from environment variables
-pinecone_api_key = os.getenv("PINECONE_API_KEY", "<your-pinecone-api-key>")
-pinecone.init(api_key=pinecone_api_key, environment="us-west1-gcp")  # Replace with your region
 
-# Create and configure an index (for example, for vector search)
-index_name = "forum_vectors"
-pinecone.create_index(name=index_name, dimension=512)  # Assuming your vectors have 512 dimensions
+pc = Pinecone(api_key=os.getenv("PINECONE_API_KEY"))
+
+INDEX_NAME = "forum-posts"
+
+# Create or connect to an existing index
+if INDEX_NAME not in pc.list_indexes().names():
+    pc.create_index(name=INDEX_NAME, metric="cosine", dimension=3072,  spec=ServerlessSpec(  # Specify the spec here
+            cloud='aws',        # You can specify your cloud provider and region
+            region='us-east-1'
+        ))
 
 # Connect to the index
-index = pinecone.Index(index_name)
+index = pc.Index(INDEX_NAME)
+
