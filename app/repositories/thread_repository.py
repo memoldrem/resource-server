@@ -35,7 +35,6 @@ class ThreadRepository:
         thread = Thread.query.get(thread_id)
         if thread is None:
             raise ValueError(f"Thread with ID {thread_id} not found")
-        # Delegate post creation to PostRepository
         post = post_repo.create_post(thread_id=thread_id, author_id=author_id, content=content)
         thread.post_count += 1
         thread.last_post_at = datetime.utcnow()
@@ -43,10 +42,12 @@ class ThreadRepository:
         return post
 
     @staticmethod
-    def delete_thread(thread_id: int) -> str:
+    def delete_thread(post_repo: PostRepository, thread_id: int) -> str:
         thread = Thread.query.get(thread_id)
         if thread is None:
             raise ValueError(f"Thread with ID {thread_id} not found")
+        # delete all posts in thread
+        post_repo.delete_posts_by_thread(thread_id)
         db.session.delete(thread)
         db.session.commit()
         return f"Thread with ID {thread_id} has been deleted successfully"

@@ -1,4 +1,6 @@
 from app.database.rdbms import Forum
+from app.database.rdbms import Thread
+from app.repositories.thread_repository import ThreadRepository
 from app import db
 
 
@@ -29,6 +31,11 @@ class ForumRepository:
     @staticmethod
     def delete_forum(forum_id):
         forum = Forum.query.get(forum_id)
+        
+        # delete the threads
+        threads = Thread.query.filter_by(forum_id=forum_id).all()
+        for thread in threads:
+            ThreadRepository.delete_thread(thread.id)
         db.session.delete(forum)
         db.session.commit()
         return forum

@@ -11,24 +11,41 @@ def search_posts():
     query = request.args.get('query')
     if not query:
         return jsonify({'error': 'Query is required'}), 400
+
     try:
         # Convert query to embedding
         response = client.embeddings.create(input=[query], model="text-embedding-ada-002")
-        query_vector = response.data[0].embedding  # Ensure this matches API response structure
-        
-        # Perform vector search in Pinecone
-        results = index.query(vector=query_vector, top_k=5, include_metadata=True)
+        query_vector = response.data[0].embedding  
 
-        if not results.get('matches'):
+        # Perform vector search in Pinecone
+        results = index.query(vector=query_vector, top_k=10, include_metadata=True)
+
+        # Set a similarity score threshold
+        min_score = 0.5  
+        filtered_results = [
+            {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content")}
+            for match in results['matches'] if match["score"] >= min_score
+        ]
+
+        # Fallback to keyword search if no results found
+        # if not filtered_results:
+        #     fallback_results = list(db.posts.find(
+        #         {"content": {"$regex": query, "$options": "i"}}
+        #     ).limit(5))
+
+        #     filtered_results = [
+        #         {"post_id": str(post["_id"]), "content": post["content"]}
+        #         for post in fallback_results
+        #     ]
+
+        if not filtered_results:
             return jsonify({'message': 'No relevant posts found'}), 200
 
-        refined_results = [
-            {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content")}
-            for match in results['matches']
-        ]
-        return jsonify(refined_results)
+        return jsonify(filtered_results)
+
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+
 
 
 # @vectors_bp.route('/recommend', methods=['GET'])
