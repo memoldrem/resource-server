@@ -10,6 +10,7 @@ from openai import OpenAI
 import pytz
 import os
 
+
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 class PostRepository:
@@ -90,7 +91,6 @@ class PostRepository:
         return posts
     
     @staticmethod   # Update
-
     def update_post(post_id, updated_fields):
         posts_collection = mongo.db.posts
         result = posts_collection.update_one(
@@ -103,13 +103,18 @@ class PostRepository:
         return {"success": False, "message": "Post not found or no changes made"}
 
 
-
-    @staticmethod   # Delete
+    @staticmethod
+     # Delete
     def delete_post(post_id: str):
         try:
             post_object_id = ObjectId(post_id) # Convert post_id to ObjectId
             posts_collection = mongo.db.posts
             result = posts_collection.delete_one({"_id": post_object_id})
+            try:
+
+                index.delete(ids=[post_id])
+            except Exception as e:
+                print(f"Error deleting vector: {e}")
 
             if result.deleted_count == 1:
                 return {"message": "Post deleted successfully", "success": True}
@@ -119,12 +124,14 @@ class PostRepository:
             return {"message": f"Error deleting post: {str(e)}", "success": False}
         
     
-    @staticmethod
-    def delete_posts_by_thread(thread_id: str):
-        try:
-            posts_collection = mongo.db.posts
-            result = posts_collection.delete_many({"thread_id": thread_id})
+    # @staticmethod
+    # def delete_posts_by_thread(thread_id: str):
+    #     try:
+    #         posts_collection = mongo.db.posts
+    #         posts_in_thread = posts_collection.find({"thread_id": thread_id})
+    #         for post in posts_in_thread:
+    #             delete_post(str(post.id))
 
-            return {"message": f"Deleted {result.deleted_count} posts", "success": True}
-        except Exception as e:
-            return {"message": f"Error deleting posts: {str(e)}", "success": False}
+    #         return {"message": f"Deleted {result.deleted_count} posts", "success": True}
+    #     except Exception as e:
+    #         return {"message": f"Error deleting posts: {str(e)}", "success": False}

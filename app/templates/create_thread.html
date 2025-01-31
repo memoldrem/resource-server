@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Thread{% endblock %}
+
+{% block content %}
+    <h2>Create New Thread in {{ forum.name }}</h2>
+    <form method="POST" action="{{ url_for('threads.create_thread', forum_id=forum.id) }}">
+        <input type="text" name="title" placeholder="Thread Title" required>
+        <textarea name="content" placeholder="Start the discussion..." required></textarea>
+        <button type="submit">Create Thread</button>
+    </form>
+{% endblock %}

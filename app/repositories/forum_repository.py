@@ -2,6 +2,7 @@ from app.database.rdbms import Forum
 from app.database.rdbms import Thread
 from app.repositories.thread_repository import ThreadRepository
 from app import db
+from flask import Flask, render_template, request, redirect, url_for
 
 
 class ForumRepository:

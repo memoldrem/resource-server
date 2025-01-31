@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Forum{% endblock %}
+
+{% block content %}
+    <h2>Create New Forum</h2>
+    <form method="POST" action="{{ url_for('create_forum') }}">
+        <input type="text" name="name" placeholder="Forum Name" required>
+        <button type="submit">Create Forum</button>
+    </form>
+{% endblock %}

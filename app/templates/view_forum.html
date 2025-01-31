@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Forum: {{ forum.name }}{% endblock %}
+
+{% block content %}
+    <h2>{{ forum.name }}</h2>
+    <a href="{{ url_for('threads.create_thread', forum_id=forum.id) }}">Create a New Thread</a>
+    <ul>
+        {% for thread in threads %}
+            <li><a href="{{ url_for('threads.view_thread', forum_id=forum.id, thread_id=thread.id) }}">{{ thread.title }}</a></li>
+        {% else %}
+            <li>No threads available in this forum.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

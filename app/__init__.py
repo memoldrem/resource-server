@@ -33,12 +33,14 @@ def create_app():
     from app.routes.ai_config_routes import ai_assistant_bp
     from app.routes.moderation_routes import moderation_bp
     from app.routes.vector_routes import vectors_bp
-    app.register_blueprint(forums_bp, url_prefix='/forums/')
-    app.register_blueprint(threads_bp, url_prefix='/threads/')
-    app.register_blueprint(posts_bp, url_prefix='/posts/')
+    from app.routes.navigation_routes import func_bp
+    app.register_blueprint(forums_bp, url_prefix='/')
+    app.register_blueprint(threads_bp, url_prefix='/')
+    app.register_blueprint(posts_bp, url_prefix='/')
     app.register_blueprint(ai_assistant_bp, url_prefix='/assistant/')
     app.register_blueprint(moderation_bp, url_prefix='/moderation/')
     app.register_blueprint(vectors_bp, url_prefix='/vector/')
+    app.register_blueprint(func_bp, url_prefix='/')
 
     
     return app
