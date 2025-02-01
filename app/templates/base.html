@@ -1,26 +1,25 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Forum Management{% endblock %}</title>
-    <!-- <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> -->
+    <title>{% block title %}Titleeee XD{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <header>
-        <h1>Forum Management</h1>
-        <nav>
+    <header class="header">
+        <h1>Titleeee XD</h1>
+        <nav class="navbar">
             <ul>
                 <a href="{{ url_for('func.render_home') }}">Home</a>
             </ul>
         </nav>
     </header>
 
-    <main>
+    <main class="container">
         {% block content %}{% endblock %}
     </main>
-
-    <footer>
+    <footer class="footer">
         <p>&copy; 2025 Forum Management</p>
     </footer>
 </body>

@@ -4,13 +4,18 @@
 
 {% block content %}
     <h2>Forums</h2>
-    <ul>
+    <div class="forum-display">
         {% for forum in forums %}
-            <li>
-                <a href="{{ url_for('forums.get_forum_by_id', forum_id=forum.id) }}">{{ forum.name }}</a>
-            </li>
+        <div class="forum-item">
+            <a class="forum-link" href="{{ url_for('forums.get_forum_by_id', forum_id=forum.id) }}">
+                {{ forum.name }}
+            </a>
+            <p class = "forum-description">{{forum.description}}</p>
+        </div>
         {% else %}
-            <li>No forums available.</li>
+        <div class="forum-item">
+            <p>No forums available.</p>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 {% endblock %}

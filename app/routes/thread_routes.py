@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, render_template, request, jsonify, sessio
 from app.repositories.thread_repository import ThreadRepository
 from app.repositories.post_repository import PostRepository
 from app.repositories.forum_repository import ForumRepository
+from app.routes.vector_routes import recommend_threads, recommend_posts
 
 threads_bp = Blueprint('threads', __name__)
 post_repo = PostRepository()
@@ -20,12 +21,27 @@ def create_thread(forum_id):
     return render_template('create_thread.html', forum=forum)
         
     
-@threads_bp.route('forum/<int:forum_id>/threads/<int:thread_id>', methods=['GET']) # Read
+@threads_bp.route('forum/<int:forum_id>/threads/<int:thread_id>', methods=['GET'])  # Read
 def view_thread(forum_id, thread_id):
     forum = ForumRepository.get_forum_by_id(forum_id)
     thread = ThreadRepository.get_thread_by_id(thread_id)
     posts = PostRepository.get_posts_by_thread(thread_id)
-    return render_template('view_thread.html', forum=forum, thread=thread, posts=posts)
+    recommendations = []
+
+    if posts and isinstance(posts[0], dict):
+        post_id = posts[0].get('_id') 
+
+        
+        if post_id:  
+            thread_ids = recommend_threads(post_id)  # Pass the correct ID for recommendations
+        for i in thread_ids:
+            th = ThreadRepository.get_thread_by_id(i)
+            print(th.title)
+            recommendations.append(ThreadRepository.get_thread_by_id(i))
+    
+    return render_template('view_thread.html', forum=forum, thread=thread, posts=posts, recommendations=recommendations)
+
+
 
 @threads_bp.route('/forum/<int:forum_id>/threads/<int:thread_id>', methods=['DELETE'])
 def delete_thread(forum_id, thread_id):

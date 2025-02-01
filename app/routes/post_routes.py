@@ -17,13 +17,13 @@ def create_post(forum_id, thread_id):
     
 
 
-# @posts_bp.route('/post/<post_id>', methods=['GET']) # Read
-# # @token_required
-# def get_post(post_id):
-#     post = PostRepository.get_post_by_id(post_id)
-#     if post:
-#         return jsonify(post), 200
-#     return jsonify({"message": "Post not found"}), 404
+@posts_bp.route('/post/<post_id>', methods=['GET']) # Read
+# @token_required
+def get_post(post_id):
+    post = PostRepository.get_post_by_id(post_id)
+    if post:
+        return jsonify(post), 200
+    return jsonify({"message": "Post not found"}), 404
 
 
 # @posts_bp.route('/thread/<thread_id>/posts', methods=['GET'])

@@ -4,12 +4,14 @@
 
 {% block content %}
     <h2>{{ forum.name }}</h2>
-    <a href="{{ url_for('threads.create_thread', forum_id=forum.id) }}">Create a New Thread</a>
-    <ul>
+    <div class="thread-display">
         {% for thread in threads %}
-            <li><a href="{{ url_for('threads.view_thread', forum_id=forum.id, thread_id=thread.id) }}">{{ thread.title }}</a></li>
+            <div class="thread-item">   
+                <a href="{{ url_for('threads.view_thread', forum_id=forum.id, thread_id=thread.id) }}">{{ thread.title }}</a>
+            </div>
         {% else %}
             <li>No threads available in this forum.</li>
         {% endfor %}
-    </ul>
+    </div>
+    <a href="{{ url_for('threads.create_thread', forum_id=forum.id) }}">Create a New Thread</a>
 {% endblock %}

@@ -17,4 +17,21 @@
         <textarea name="content" rows="4" cols="50" placeholder="Write your post here..."></textarea>
         <button type="submit">Post</button>
     </form>
+
+    <!-- Recommended Posts Section -->
+    <h3>Recommended Posts</h3>
+    <div id="recommended-posts">
+        <ul>
+            {% if recommendations %}
+                {% for rec in recommendations %}
+                    <li class="thread-item">   
+                        <a href="{{ url_for('threads.view_thread', forum_id=rec.forum_id, thread_id=rec.id) }}">{{ rec.title }}</a>
+                    </li>
+
+                {% endfor %}
+            {% else %}
+                <li>No similar posts found.</li>
+            {% endif %}
+        </ul>
+    </div>
 {% endblock %}

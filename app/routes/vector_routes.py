@@ -56,16 +56,77 @@ def recommend_posts(post_id):
 
         if not recommendations.get('matches'):
             return jsonify({'message': 'No similar posts found'}), 200
+        
 
         refined_recommendations = [
-            {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content")}
+            {"post_id": match["id"], "score": match["score"], "content": match["metadata"].get("content"), 
+             "thread_id": match["metadata"].get("thread_id"), "author_id": match["metadata"].get("author_id")}
             for match in recommendations['matches']
             if match["id"] != post_id
         ]
         
-        return jsonify(refined_recommendations)
+        return refined_recommendations
     except Exception as e:
         return jsonify({"error": f"An error occurred: {str(e)}"}), 500
+    
+
+def recommend_threads(post_id):
+    if not post_id:
+        print("Error: Post ID is required")
+        return {"error": "Post ID is required"}
+    
+    try:
+        # Fetch the embedding for the given post
+        result = index.fetch(ids=[post_id])
+
+        if not result or 'vectors' not in result or post_id not in result['vectors']:
+            print("Error: Post not found or embedding not available")
+            return {"error": "Post not found or embedding not available"}
+
+        post_embedding = result['vectors'][post_id]['values']
+
+        threads = []
+
+        # Perform similarity query
+        recommendations = index.query(vector=post_embedding, top_k=50, include_metadata=True)
+        # print(f"Raw recommendations: {recommendations}")  # Debugging
+
+        if not recommendations.get('matches'):
+            print("No similar posts found")
+            return {"message": "No similar posts found"}
+
+        for match in recommendations['matches']:
+            # print(f"Match found: {match}")  # Debugging
+
+            # Check metadata structure
+            if "metadata" not in match:
+                # print("Skipping match due to missing metadata:", match)
+                continue
+
+            thread_id = match["metadata"].get("thread_id")  # Safe way to access metadata
+            # print(f"Extracted thread_id: {thread_id}")  # Debugging
+
+            if not thread_id:
+                print(f"Skipping match due to missing thread_id: {match}")  # Debugging
+                continue
+
+            if thread_id in threads:
+                continue
+
+            threads.append(thread_id)
+            # print(f"Added thread_id: {thread_id}")  # Debugging
+
+            if len(threads) >= 5:
+                break
+
+        # print(f"Final recommended threads: {threads}")  # Debugging
+        return threads
+
+    except Exception as e:
+        print(f"Exception occurred: {str(e)}")  # Debugging
+        return {"error": f"An error occurred: {str(e)}"}
+
+
 
 
 
