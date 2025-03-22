@@ -17,7 +17,8 @@ def create_app():
     
 
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
-    app.config['MONGO_URI'] = os.getenv("MONGO_URI")
+    # app.config['MONGO_URI'] = os.getenv("MONGO_URI")
+    app.config['MONGO_URI'] = "mongodb://localhost:27017/resource-server"
     
     # Initialize databases
     db.init_app(app)

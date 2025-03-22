@@ -41,7 +41,6 @@ class PostRepository:
                 'values': embedding,
                 'metadata': {"content": content, "thread_id": thread_id}
             }])
-            print("Upsert Response:", upsert_response) 
             return {"id": str(post_id), "content": content, "thread_id": thread_id}
 
         except Exception as e:
