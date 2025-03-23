@@ -33,7 +33,9 @@ def view_thread(forum_id, thread_id):
 
         
         if post_id:  
-            thread_ids = recommend_threads(post_id)  # Pass the correct ID for recommendations
+            thread_ids = recommend_threads(post_id)
+            print('1111')
+            print(recommend_threads(post_id))
         for i in thread_ids:
             th = ThreadRepository.get_thread_by_id(i)
             print(th.title)

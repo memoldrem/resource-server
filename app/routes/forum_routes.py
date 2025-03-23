@@ -5,6 +5,20 @@ from app.repositories.thread_repository import ThreadRepository
 
 forums_bp = Blueprint('forums', __name__)
 
+@forums_bp.route('/header', methods=['GET'])
+def header():
+    auth_header = request.headers.get('Authorization')
+    if not auth_header:
+        return jsonify({'message': 'Authorization header is missing'}), 401
+    parts = auth_header.split()
+
+    if len(parts) != 2 or parts[0].lower() != 'bearer':
+        return jsonify({'message': 'Invalid Authorization header format'}), 401
+    
+    access_token = parts[1]
+    return jsonify({'message': 'Token is valid', 'token': access_token}), 200
+    
+
 @forums_bp.route('/discover', methods=['GET'])
 def get_all_forums():
     forums = ForumRepository.get_all_forums()
