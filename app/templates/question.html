@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Query Posts{% endblock %}
+
+{% block content %}
+    <h3>Search</h3>
+    <form method="POST" action="{{ url_for('moderation.chat') }}">
+        <textarea name="content" placeholder="Write query here"></textarea>
+        <button type="submit">Ask!</button>
+    </form>
+
+    {% if response %}
+    <h4>Answer:</h4>
+    <p>{{ response }}</p>
+    {% endif %}
+{% endblock %}

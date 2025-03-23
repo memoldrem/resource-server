@@ -8,10 +8,13 @@
 </head>
 <body>
     <header class="header">
-        <h1>Titleeee XD</h1>
+        <h1>Blawg</h1>
         <nav class="navbar">
             <ul>
-                <a href="{{ url_for('func.render_home') }}">Home</a>
+                <a href="{{ url_for('forums.get_all_forums') }}">Home</a>
+            </ul>
+            <ul>
+                <a href="{{ url_for('moderation.get_chat') }}">Ask the Platform</a>
             </ul>
         </nav>
     </header>
